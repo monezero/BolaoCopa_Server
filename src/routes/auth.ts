@@ -2,6 +2,7 @@ import { FastifyInstance } from "fastify";
 import { z } from "zod";
 import { prisma } from "../lib/prisma";
 import { authenticate } from "../plugins/authenticate";
+import fetch from 'node-fetch'
 
 export async function authRoutes(fastify: FastifyInstance) {
   fastify.get(
@@ -12,6 +13,8 @@ export async function authRoutes(fastify: FastifyInstance) {
    async (request) => {
    return { user: request.user }
   })
+
+  // É por causa da versão do node KKKKKKKKKKKKK, calma
 
   fastify.post("/users", async (request) => {
     const createUserBody = z.object({
@@ -31,7 +34,7 @@ export async function authRoutes(fastify: FastifyInstance) {
     const userInfoSchema = z.object ({
       id: z.string(),
       email: z.string().email(),
-      name: z.string(),
+      nome: z.string(),
       picture: z.string().url(),
     })
       
@@ -47,15 +50,15 @@ export async function authRoutes(fastify: FastifyInstance) {
       user = await prisma.user.create({
         data: {
           googleId: userInfo.id,
-          name: userInfo.name,
+          nome: userInfo.nome,
           email: userInfo.email,
-          avatarUrl: userInfo.picture,
+          avatarurl: userInfo.picture,
         }
       })
     }
 
     const token = fastify.jwt.sign({
-      name: user.name,
+      nome: user.nome,
       avatarUrl: user.avatarurl,
     }, {
       sub: user.id,

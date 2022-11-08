@@ -5,6 +5,7 @@ import { z } from "zod";
 import { authenticate } from "../plugins/authenticate";
 
 
+
 export async function poolRoutes(fastify: FastifyInstance) {
   fastify.get("/pools/count", async () => {
     const count = await prisma.pool.count();
@@ -107,7 +108,7 @@ export async function poolRoutes(fastify: FastifyInstance) {
 
   fastify.get("/pools", {
     onRequest: [authenticate]
-  }, (request) => {
+  }, async (request) => {
     const pools = await prisma.pool.findMany({
       where: {
         participants: {
@@ -128,7 +129,7 @@ export async function poolRoutes(fastify: FastifyInstance) {
 
             user: {
               select: {
-                avatarUrl: true,
+                avatarurl: true,
               }
             }
           },
@@ -177,7 +178,7 @@ export async function poolRoutes(fastify: FastifyInstance) {
   
               user: {
                 select: {
-                  avatarUrl: true,
+                  avatarurl: true,
                 }
               }
             },
