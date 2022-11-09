@@ -31,10 +31,10 @@ export async function authRoutes(fastify: FastifyInstance) {
 
     const userData = await userResponse.json()
 
-    const userInfoSchema = z.object ({
+    const userInfoSchema = z.object({
       id: z.string(),
       email: z.string().email(),
-      nome: z.string(),
+      name: z.string(),
       picture: z.string().url(),
     })
       
@@ -50,7 +50,7 @@ export async function authRoutes(fastify: FastifyInstance) {
       user = await prisma.user.create({
         data: {
           googleId: userInfo.id,
-          nome: userInfo.nome,
+          nome: userInfo.name,
           email: userInfo.email,
           avatarurl: userInfo.picture,
         }
@@ -59,7 +59,7 @@ export async function authRoutes(fastify: FastifyInstance) {
 
     const token = fastify.jwt.sign({
       nome: user.nome,
-      avatarUrl: user.avatarurl,
+      avatarurl: user.avatarurl,
     }, {
       sub: user.id,
       expiresIn: "7 days",

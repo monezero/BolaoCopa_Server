@@ -9,6 +9,7 @@ import { authRoutes } from "./routes/auth";
 import { guessRoutes } from "./routes/guess";
 import { gameRoutes } from "./routes/game";
 import { userRoutes } from "./routes/user";
+import { ZodError } from "zod";
 
 
 async function bootstrap() {
@@ -16,10 +17,23 @@ async function bootstrap() {
     logger: true,
   });
 
-  await fastify.register(cors, {
+  await fastify.register(cors, {    
     origin: true,
   });
-
+  
+  fastify.setErrorHandler((err, req, res) => {
+    if (err instanceof ZodError){
+      const mappedErrors = err.errors.map((zodError) => {
+        if(zodError.path.length === 0){
+          return res.code(400).send(new Error('Body Vazio'))
+        }
+        return `${zodError.path[0]}: ${zodError.message}`
+      })
+      const joinedErrors = mappedErrors.join(', ')
+      console.log(err)
+      // return res.code(400).send(new Error(joinedErrors))
+    }
+  })
   // Em produção isso precisa ser uma variável ambiente
 
   await fastify.register(jwt,{
@@ -35,7 +49,6 @@ async function bootstrap() {
   // http://localhost:3333/pools
   
 
-  
 
 
   
